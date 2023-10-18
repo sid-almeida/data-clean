@@ -44,13 +44,12 @@ if choice == "Limpeza Automatizada":
             data = data.apply(lambda x: x.str.replace("  ", " "))
             # caso no título da coluna tenha a palavra "NOME", todos os valores devem começar com letra maiúscula no início de cada palavra
             data = data.apply(lambda x: x.str.title() if "NOME" in x.name else x)
-            # caso no título da coluna tenha a palavra "CPF" removí os caracteres especiais
-            data = data.apply(lambda x: x.str.replace(".", "") if "CPF" in x.name else x)
-            data = data.apply(lambda x: x.str.replace("-", "") if "CPF" in x.name else x)
             # caso no título da coluna tenha a palavra "CPF" e o valor seja menor que 11 caracteres, preenchi com zeros à esquerda
             data = data.apply(lambda x: x.str.zfill(11) if "CPF" in x.name and len(x) < 11 else x)
-            # caso no título da coluna tenha a palavra "CPF" e o valor seja maior que 11 caracteres, removí os caracteres excedentes
-            data = data.apply(lambda x: x.str.slice(0, 11) if "CPF" in x.name and len(x) > 11 else x)
+            # caso no título da coluna tenha a palavra "CPF" e o valor seja maior que 11 caracteres, verificar se existem "." e "-" duplicados e remover os duplicados
+            data = data.apply(lambda x: x.str.replace("..", ".") if "CPF" in x.name and len(x) > 11 else x)
+            data = data.apply(lambda x: x.str.replace("--", "-") if "CPF" in x.name and len(x) > 11 else x)
+
             # Mostrando o resultado da limpeza
             st.subheader("Dataframe Limpo")
             st.write(data)

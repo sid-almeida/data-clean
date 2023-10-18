@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
-
+import re
 
 # configurei o streamlit para abrir em wide mode
 st.set_page_config(layout="wide")
@@ -15,7 +15,6 @@ with st.sidebar:
 
 if choice == "Limpeza Automatizada":
     st.subheader("Limpeza Automatizada de Dados")
-    st.write("Selecione o augorítmo para ser utilizado.")
     # criei um uploader para fazer upload do arquivo .csv
     uploaded_file = st.file_uploader("Escolha um arquivo .csv", type="csv")
     if uploaded_file is not None:
@@ -25,6 +24,8 @@ if choice == "Limpeza Automatizada":
         data = pd.read_csv(uploaded_file, sep=";", encoding="latin1")
         st.subheader("Dataframe")
         st.write(data)
+        # converti todas as colunas para string
+        data = data.astype(str)
         # escrevi o típo de dado de cada coluna
         st.write("Tipos de dados:")
         st.write(data.dtypes)
@@ -36,19 +37,16 @@ if choice == "Limpeza Automatizada":
             data = data[colunas]
             # excluí linhas vaizas
             data = data.dropna(how="all")
-            # convertí todas as colunas para o tipo string
-            data = data.astype(str)
             # removí os espaços em branco no início e no fim de cada string
             data = data.apply(lambda x: x.str.strip())
             # removí os espaços em branco duplicados
             data = data.apply(lambda x: x.str.replace("  ", " "))
             # caso no título da coluna tenha a palavra "NOME", todos os valores devem começar com letra maiúscula no início de cada palavra
             data = data.apply(lambda x: x.str.title() if "NOME" in x.name else x)
-            # caso no título da coluna tenha a palavra "CPF" e o valor seja menor que 11 caracteres, preenchi com zeros à esquerda
             data = data.apply(lambda x: x.str.zfill(11) if "CPF" in x.name and len(x) < 14 else x)
-            # caso no título da coluna tenha a palavra "CPF" e o valor seja maior que 11 caracteres, verificar se existem "." e "-" duplicados e remover os duplicados
-            data = data.apply(lambda x: x.str.replace("..", ".") if "CPF" in x.name and len(x) > 14 else x)
-            data = data.apply(lambda x: x.str.replace("--", "-") if "CPF" in x.name and len(x) > 14 else x)
+            # na coluna CPF_PARTICIPANTE todos os valores devem ter 14 caracteres e estarem no formato 000.000.000-00
+            data["CPF_PARTICIPANTE"] = data["CPF_PARTICIPANTE"].apply(lambda x: f"{x[:3]}.{x[3:6]}.{x[6:9]}-{x[9:]}")
+
 
             # Mostrando o resultado da limpeza
             st.subheader("Dataframe Limpo")

@@ -28,8 +28,8 @@ if choice == "Limpeza Automatizada":
     # criei um uploader para fazer upload do arquivo .csv
     uploaded_file = st.file_uploader("Escolha um arquivo .csv", type="csv")
     if uploaded_file is not None:
-        # criei um selectbox para selecionar o separador do arquivo
-        sep = st.selectbox("Selecione o separador do arquivo", [",", ";", "|"])
+        # criei selectboxes para selecionar o separador do arquivo .csv
+        sep = st.selectbox("Selecione o separador do arquivo .csv", [",", ";", "|"])
         # salvei o nome do arquivo em uma variável
         filename = uploaded_file.name
         # transformei o arquivo em um dataframe com separador de ponto e vírgula

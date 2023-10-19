@@ -64,8 +64,8 @@ if choice == "Limpeza Automatizada":
             st.subheader("Dataframe Limpo")
             st.write(data)
             st.success("Limpeza executada com sucesso!")
-            # Criei um botão para fazer o download do arquivo .csv limpo com o nome do arquivo original + "limpo" deletando a coluna index
-            if st.download_button("Download do Arquivo Limpo", data.to_csv(index=False), file_name=f"{filename}_limpo.csv", mime="text/csv"):
+            # Criei um botão para fazer o download do arquivo .csv limpo com o nome do arquivo original + "limpo" deletando a coluna index com todas as colunas convertidas para string
+            if st.download_button("Download do Arquivo Limpo", data.to_csv(index=False, encoding="latin1"), file_name=filename.replace(".csv", "") + "_limpo.csv"):
                 pass
     else:
         st.warning("Faça o upload de um arquivo .csv para executar a **limpeza**.")

@@ -66,6 +66,8 @@ if choice == "Limpeza Automatizada":
             # caso no título da coluna tenha a palavra "NOME", todos os valores devem começar com letra maiúscula no início de cada palavra
             data = data.apply(lambda x: x.str.title() if "NOME" in x.name else x)
             data = data.apply(lambda x: x.str.zfill(11) if "CPF" in x.name and len(x) < 14 else x)
+            # caso o título da coluna tenha a palavra "EMAIL", todos os valores devem estar em letras minúsculas
+            data = data.apply(lambda x: x.str.lower() if "EMAIL" in x.name else x)
             # Aplicando a função format_cpf_column
             data = format_cpf_column(data)
             # Mostrando o resultado da limpeza

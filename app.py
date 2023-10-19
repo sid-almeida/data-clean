@@ -41,7 +41,7 @@ if choice == "Limpeza Automatizada":
         # transformei o arquivo em um dataframe com separador de ponto e vírgula
         data = pd.read_csv(uploaded_file, sep=sep, encoding="latin1")
         # removi linhas vazias
-        remover_ultimas_linhas_vazias(data)
+        data = data.dropna(how="all")
         st.subheader("Dataframe")
         st.write(data)
         # converti todas as colunas para string

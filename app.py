@@ -16,6 +16,12 @@ def format_cpf_column(data):
     data["CPF_PARTICIPANTE"] = data["CPF_PARTICIPANTE"].str.replace(r'(\d{3})(\d{3})(\d{3})(\d{2})', r'\1.\2.\3-\4', regex=True)
     return data
 
+# função linhas vazias
+def remover_ultimas_linhas_vazias(df):
+    linhas_vazias = df[df.isna().all(axis=1)].index
+    df = df.drop(linhas_vazias)
+    return df
+
 with st.sidebar:
     st.image("Brainize Tech(1).png", width=250)
     st.write('---')
@@ -29,11 +35,13 @@ if choice == "Limpeza Automatizada":
     uploaded_file = st.file_uploader("Escolha um arquivo .csv", type="csv")
     if uploaded_file is not None:
         # criei selectboxes para selecionar o separador do arquivo .csv
-        sep = st.selectbox("Selecione o separador do arquivo .csv", [",", ";", "|"])
+        sep = st.radio("Selecione o separador do arquivo .csv", (",", ";","|"))
         # salvei o nome do arquivo em uma variável
         filename = uploaded_file.name
         # transformei o arquivo em um dataframe com separador de ponto e vírgula
         data = pd.read_csv(uploaded_file, sep=sep, encoding="latin1")
+        # removi linhas vazias
+        data = data.dropna(how="all")
         st.subheader("Dataframe")
         st.write(data)
         # converti todas as colunas para string
@@ -49,6 +57,8 @@ if choice == "Limpeza Automatizada":
             data = data[colunas].astype(str)
             # excluí linhas vaizas
             data = data.dropna(how="all")
+            # removí linhas com valores None Nan ou Na
+            data = data.dropna()
             # removí os espaços em branco no início e no fim de cada string
             data = data.apply(lambda x: x.str.strip())
             # removí os espaços em branco duplicados
@@ -58,8 +68,6 @@ if choice == "Limpeza Automatizada":
             data = data.apply(lambda x: x.str.zfill(11) if "CPF" in x.name and len(x) < 14 else x)
             # Aplicando a função format_cpf_column
             data = format_cpf_column(data)
-
-
             # Mostrando o resultado da limpeza
             st.subheader("Dataframe Limpo")
             st.write(data)
